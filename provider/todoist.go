@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -66,18 +64,7 @@ func (client Todoist) GetTask(id string) (TodoistTask, error) {
 	var task TodoistTask
 	res, err := client.Do(client.Request("GET", GET_TASK+id))
 
-	if err != nil {
-		return task, err
-	}
-
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return task, err
-	}
-
-	err = json.Unmarshal(body, &task)
+	err = unmarshal(res, &task, err)
 	return task, err
 }
 
@@ -85,17 +72,6 @@ func (client Todoist) GetTasks() ([]TodoistTask, error) {
 	var tasks []TodoistTask
 	res, err := client.Do(client.Request("GET", GET_TASKS))
 
-	if err != nil {
-		return tasks, err
-	}
-
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return tasks, err
-	}
-
-	err = json.Unmarshal(body, &tasks)
+	err = unmarshal(res, &tasks, err)
 	return tasks, err
 }
