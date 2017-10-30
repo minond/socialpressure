@@ -1,10 +1,22 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	config "github.com/minond/gofigure"
 	"github.com/minond/peer-pressure/provider"
+	"time"
 )
+
+func dump(thing interface{}, err error) {
+	if err != nil {
+		panic(fmt.Sprintf("Error : %v", err))
+		return
+	}
+
+	pretty, _ := json.MarshalIndent(thing, "", "  ")
+	fmt.Println(string(pretty))
+}
 
 func main() {
 	var keys struct {
@@ -17,11 +29,13 @@ func main() {
 	config.Load("keys", &keys)
 
 	todoist := provider.Todoist{provider.Auth{Token: keys.Todoist.Token}}
-	tasks, err := todoist.GetTasks()
+
+	task, err := todoist.GetTask("2297620443")
 
 	if err != nil {
-		panic(fmt.Sprintf("Error making request: %v", err))
+		panic(fmt.Sprintf("Error getting task: %v", err))
 	}
 
-	fmt.Println(tasks)
+	mediatedToday := task.Due.Date.After(time.Now())
+	fmt.Printf("Have I mediated and/or exercised today? %v\n", mediatedToday)
 }
