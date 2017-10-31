@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/now"
 )
 
 const (
@@ -75,4 +77,15 @@ func (client Todoist) GetTasks() ([]TodoistTask, error) {
 
 	err = unmarshal(res, &tasks, err)
 	return tasks, err
+}
+
+func (client Todoist) Query(query TodoistQuery) (Query, error) {
+	task, err := client.GetTask(query.TaskId)
+
+	if err != nil {
+		return Query{}, err
+	}
+
+	query.OkToday = task.Due.Date.After(now.EndOfDay())
+	return query.Prepare(), nil
 }

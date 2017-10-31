@@ -3,6 +3,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/jinzhu/now"
+  packages = ["."]
+  revision = "d939ba741945c047cac69c329c5fb0d6b4a06520"
+
+[[projects]]
+  branch = "master"
   name = "github.com/minond/gofigure"
   packages = ["."]
   revision = "9b9017d543c7db3ebb1744517ab94fe1dca18d98"
@@ -16,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "294aff3fce9ab09d3832a17cd1dd9481f98938519b6bad0e47d7759a4a8cd693"
+  inputs-digest = "fc120f377f938279bd4ee7532a95769432f575a530b095104c948698a89a1d32"
   solver-name = "gps-cdcl"
   solver-version = 1

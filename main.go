@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
 	config "github.com/minond/gofigure"
 	"github.com/minond/peer-pressure/provider"
-	"time"
 )
 
 func dump(thing interface{}, err error) {
