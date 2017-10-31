@@ -30,12 +30,8 @@ func main() {
 
 	todoist := provider.Todoist{provider.Auth{Token: keys.Todoist.Token}}
 
-	task, err := todoist.GetTask("2297620443")
-
-	if err != nil {
-		panic(fmt.Sprintf("Error getting task: %v", err))
-	}
-
-	mediatedToday := task.Due.Date.After(time.Now())
-	fmt.Printf("Have I mediated and/or exercised today? %v\n", mediatedToday)
+	dump(todoist.Query(provider.TodoistQuery{
+		TaskId:  "2297620443",
+		Message: "Have I mediated and/or exercised today?",
+	}))
 }

@@ -40,6 +40,27 @@ type TodoistDate struct {
 	time.Time
 }
 
+type TodoistQuery struct {
+	TaskId  string `json:"task_id"`
+	Message string `json:"message"`
+	OkToday bool   `json:"ok_today"`
+}
+
+func (query TodoistQuery) GetMessage() string {
+	return query.Message
+}
+
+func (query TodoistQuery) IsOkToday() bool {
+	return query.OkToday
+}
+
+func (query TodoistQuery) Prepare() Query {
+	return Query{
+		Message: query.Message,
+		OkToday: query.OkToday,
+	}
+}
+
 func (td *TodoistDate) UnmarshalJSON(bytes []byte) (err error) {
 	// Expected layout: Mon Jan 2 15:04:05 -0700 MST 2006
 	// Todoist layout: 2016-09-01
