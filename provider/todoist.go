@@ -41,7 +41,8 @@ type TodoistDate struct {
 func (td *TodoistDate) UnmarshalJSON(bytes []byte) (err error) {
 	// Expected layout: Mon Jan 2 15:04:05 -0700 MST 2006
 	// Todoist layout: 2016-09-01
-	td.Time, err = time.Parse("2006-01-02", strings.Trim(string(bytes), "\""))
+	loc := time.Now().Location()
+	td.Time, err = time.ParseInLocation("2006-01-02", strings.Trim(string(bytes), "\""), loc)
 	return err
 }
 
