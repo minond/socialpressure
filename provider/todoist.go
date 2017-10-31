@@ -71,7 +71,29 @@ func (td *TodoistDate) UnmarshalJSON(bytes []byte) (err error) {
 
 func (client Todoist) Do(req *http.Request) (*http.Response, error) {
 	httpClient := http.Client{}
-	return httpClient.Do(req)
+
+	resCh := make(chan *http.Response)
+	errCh := make(chan error)
+
+	go func() {
+		res, err := httpClient.Do(req)
+
+		if err != nil {
+			errCh <- err
+		} else {
+			resCh <- res
+		}
+	}()
+
+	for {
+		select {
+		case res := <-resCh:
+			return res, nil
+
+		case err := <-errCh:
+			return nil, err
+		}
+	}
 }
 
 func (client Todoist) Request(method, url string) *http.Request {
