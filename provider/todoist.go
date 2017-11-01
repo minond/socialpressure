@@ -43,22 +43,7 @@ type TodoistDate struct {
 type TodoistQuery struct {
 	TaskId  string `json:"task_id"`
 	Message string `json:"message"`
-	OkToday bool   `json:"ok_today"`
-}
-
-func (query TodoistQuery) GetMessage() string {
-	return query.Message
-}
-
-func (query TodoistQuery) IsOkToday() bool {
-	return query.OkToday
-}
-
-func (query TodoistQuery) Prepare() Query {
-	return Query{
-		Message: query.Message,
-		OkToday: query.OkToday,
-	}
+	OkToday bool
 }
 
 func (td *TodoistDate) UnmarshalJSON(bytes []byte) (err error) {
@@ -129,6 +114,8 @@ func (client Todoist) Query(query TodoistQuery) (Query, error) {
 		return Query{}, err
 	}
 
-	query.OkToday = task.Due.Date.After(now.EndOfDay())
-	return query.Prepare(), nil
+	return Query{
+		Message: query.Message,
+		Ok:      task.Due.Date.After(now.EndOfDay()),
+	}, nil
 }

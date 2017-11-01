@@ -12,13 +12,7 @@ type Auth struct {
 
 type Query struct {
 	Message string `json:"message"`
-	OkToday bool   `json:"ok_today"`
-}
-
-type StandardQuery interface {
-	GetMessage() string
-	IsOkToday() bool
-	Prepare() Query
+	Ok      bool   `json:"ok"`
 }
 
 func unmarshal(res *http.Response, store interface{}, lastError error) error {
