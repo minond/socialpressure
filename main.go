@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	config "github.com/minond/gofigure"
-	"github.com/minond/peer-pressure/api"
+	"github.com/minond/socialpressure/api"
 )
 
 func dump(thing interface{}, err error) {
@@ -28,10 +28,14 @@ func main() {
 	config.AddVariants("local")
 	config.Load("keys", &keys)
 
+	if keys.Todoist.Token == "" {
+		panic("I need a Todoist API Token (Settings -> Integrations -> API Token)")
+	}
+
 	todoist := api.Todoist{api.Auth{Token: keys.Todoist.Token}}
 
 	dump(todoist.Query(api.TodoistQuery{
 		TaskId:  "2297620443",
-		Message: "Have I mediated and/or exercised today?",
+		Message: "Has Marcos mediated and/or exercised today?",
 	}))
 }
