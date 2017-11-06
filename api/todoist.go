@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	GET_TASK  = "https://beta.todoist.com/API/v8/tasks/"
-	GET_TASKS = "https://beta.todoist.com/API/v8/tasks"
+	GetTaskURL  = "https://beta.todoist.com/API/v8/tasks/"
+	GetTasksURL = "https://beta.todoist.com/API/v8/tasks"
 )
 
 type Todoist struct {
@@ -18,14 +18,14 @@ type Todoist struct {
 }
 
 type TodoistTask struct {
-	Id           int    `json:"id"`
-	ProjectId    int    `json:"project_id"`
+	ID           int    `json:"id"`
+	ProjectID    int    `json:"project_id"`
 	Content      string `json:"content"`
 	Completed    bool   `json:"completed"`
 	Order        int    `json:"order"`
 	Indent       int    `json:"indent"`
 	Priority     int    `json:"priority"`
-	Url          string `json:"url"`
+	URL          string `json:"url"`
 	CommentCount int    `json:"comment_count"`
 	Due          struct {
 		Recurring bool        `json:"recurring"`
@@ -41,7 +41,7 @@ type TodoistDate struct {
 }
 
 type TodoistQuery struct {
-	TaskId  string `json:"task_id"`
+	TaskID  string `json:"task_id"`
 	Message string `json:"message"`
 	OkToday bool
 }
@@ -56,29 +56,7 @@ func (td *TodoistDate) UnmarshalJSON(bytes []byte) (err error) {
 
 func (client Todoist) Do(req *http.Request) (*http.Response, error) {
 	httpClient := http.Client{}
-
-	resCh := make(chan *http.Response)
-	errCh := make(chan error)
-
-	go func() {
-		res, err := httpClient.Do(req)
-
-		if err != nil {
-			errCh <- err
-		} else {
-			resCh <- res
-		}
-	}()
-
-	for {
-		select {
-		case res := <-resCh:
-			return res, nil
-
-		case err := <-errCh:
-			return nil, err
-		}
-	}
+	return httpClient.Do(req)
 }
 
 func (client Todoist) Request(method, url string) *http.Request {
@@ -93,7 +71,7 @@ func (client Todoist) Request(method, url string) *http.Request {
 
 func (client Todoist) GetTask(id string) (TodoistTask, error) {
 	var task TodoistTask
-	res, err := client.Do(client.Request("GET", GET_TASK+id))
+	res, err := client.Do(client.Request("GET", GetTaskURL+id))
 
 	err = unmarshal(res, &task, err)
 	return task, err
@@ -101,14 +79,14 @@ func (client Todoist) GetTask(id string) (TodoistTask, error) {
 
 func (client Todoist) GetTasks() ([]TodoistTask, error) {
 	var tasks []TodoistTask
-	res, err := client.Do(client.Request("GET", GET_TASKS))
+	res, err := client.Do(client.Request("GET", GetTasksURL))
 
 	err = unmarshal(res, &tasks, err)
 	return tasks, err
 }
 
 func (client Todoist) Query(query TodoistQuery) (Query, error) {
-	task, err := client.GetTask(query.TaskId)
+	task, err := client.GetTask(query.TaskID)
 
 	if err != nil {
 		return Query{}, err

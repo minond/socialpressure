@@ -35,7 +35,7 @@ func main() {
 	todoist := api.Todoist{api.Auth{Token: keys.Todoist.Token}}
 
 	dump(todoist.Query(api.TodoistQuery{
-		TaskId:  "2297620443",
+		TaskID:  "2297620443",
 		Message: "Has Marcos mediated and/or exercised today?",
 	}))
 }
