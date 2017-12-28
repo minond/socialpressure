@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -20,12 +19,5 @@ func unmarshal(res *http.Response, store interface{}, lastError error) error {
 		return lastError
 	}
 
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(body, &store)
+	return json.NewDecoder(res.Body).Decode(&store)
 }
