@@ -1,21 +1,32 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	config "github.com/minond/gofigure"
 	"github.com/minond/socialpressure/api"
 )
 
-func dump(thing interface{}, err error) {
+func dump(q api.Query, err error) {
 	if err != nil {
-		panic(fmt.Sprintf("Error : %v", err))
-		return
-	}
+		fmt.Printf("Error (%s): %v\n", q.Message, err)
+	} else {
+		ans := "No"
 
-	pretty, _ := json.MarshalIndent(thing, "", "  ")
-	fmt.Println(string(pretty))
+		if q.Ok {
+			ans = "Yes"
+		}
+
+		fmt.Printf("%s %s.\n", q.Message, ans)
+	}
+}
+
+func query(qch chan<- api.Query, ech chan<- error, todoist api.Todoist, q api.TodoistQuery) {
+	go func() {
+		q, e := todoist.Query(q)
+		qch <- q
+		ech <- e
+	}()
 }
 
 func main() {
@@ -33,9 +44,19 @@ func main() {
 	}
 
 	todoist := api.Todoist{api.Auth{Token: keys.Todoist.Token}}
+	qch := make(chan api.Query)
+	ech := make(chan error)
 
-	dump(todoist.Query(api.TodoistQuery{
+	query(qch, ech, todoist, api.TodoistQuery{
 		TaskID:  "2297620443",
 		Message: "Has Marcos mediated and/or exercised today?",
-	}))
+	})
+
+	query(qch, ech, todoist, api.TodoistQuery{
+		TaskID:  "2313429809",
+		Message: "Has Marcos done his class work today?",
+	})
+
+	dump(<-qch, <-ech)
+	dump(<-qch, <-ech)
 }
